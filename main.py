@@ -44,23 +44,23 @@ def show_menu():
     """메뉴를 화면에 보여 준다."""
     print()
     print("===== 할 일 관리 =====")
-    print("1. 목록 보기  2. 추가  3. 완료  4. 삭제  5. 종료")
+    print("1. 목록 보기  2. 추가  3. 완료  4. 삭제  5. 종료  6. 검색")
 
 
-def show_todos(todos):
-    """할 일 목록을 번호, 상태, 할 일 세 칸짜리 표로 보여 준다."""
-    if not todos:
-        print("할 일이 없습니다.")
-        return
+def print_table(rows, title):
+    """(번호, 할 일) 묶음들을 받아 번호, 상태, 할 일 세 칸짜리 표로 그린다.
 
+    목록 보기와 검색이 함께 쓴다. 번호를 따로 받는 이유는,
+    검색 결과에서도 원래 목록의 번호를 그대로 보여 주기 위해서다.
+    (그래야 검색해서 본 번호로 바로 완료·삭제할 수 있다.)
+    """
     # 표를 만들고 칸(열) 제목을 정한다.
-    table = Table(title="할 일 목록")
+    table = Table(title=title)
     table.add_column("번호", justify="right")  # 번호는 오른쪽 정렬
     table.add_column("상태", justify="center")  # 상태는 가운데 정렬
     table.add_column("할 일")
 
-    # enumerate(..., start=1)은 1부터 번호를 붙여 준다.
-    for number, todo in enumerate(todos, start=1):
+    for number, todo in rows:
         # 완료했으면 초록색 "완료", 아니면 그냥 "미완료"로 표시한다.
         if todo["done"]:
             status = Text("완료", style="green")
@@ -73,6 +73,37 @@ def show_todos(todos):
         table.add_row(str(number), status, Text(todo["title"]))
 
     console.print(table)
+
+
+def show_todos(todos):
+    """할 일 목록 전체를 표로 보여 준다."""
+    if not todos:
+        print("할 일이 없습니다.")
+        return
+
+    # enumerate(..., start=1)은 1부터 번호를 붙여 (번호, 할 일) 묶음을 만들어 준다.
+    print_table(enumerate(todos, start=1), "할 일 목록")
+
+
+def search_todos(todos):
+    """검색어를 입력받아 제목에 그 검색어가 들어간 할 일만 표로 보여 준다."""
+    keyword = input("검색어: ").strip()
+    if keyword == "":
+        print("검색어가 비어 있어서 검색하지 않았습니다.")
+        return
+
+    # 제목에 검색어가 들어간 할 일만 골라 담는다. 번호는 원래 목록 번호를 그대로 쓴다.
+    # lower()는 영어 대문자를 소문자로 바꿔서 "Milk"와 "milk"를 같게 찾도록 해 준다.
+    results = []
+    for number, todo in enumerate(todos, start=1):
+        if keyword.lower() in todo["title"].lower():
+            results.append((number, todo))
+
+    if not results:
+        print(f"'{keyword}'이(가) 들어간 할 일이 없습니다.")
+        return
+
+    print_table(results, f"'{keyword}' 검색 결과")
 
 
 def add_todo(todos):
@@ -160,8 +191,10 @@ def main():
         elif choice == "5":
             print("프로그램을 종료합니다. 안녕히 가세요!")
             break  # while 반복을 빠져나간다.
+        elif choice == "6":
+            search_todos(todos)
         else:
-            print("잘못된 선택입니다. 1~5 중에서 골라 주세요.")
+            print("잘못된 선택입니다. 1~6 중에서 골라 주세요.")
 
 
 # 이 파일을 직접 실행했을 때만 main()을 부른다.

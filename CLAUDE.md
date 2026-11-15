@@ -12,6 +12,7 @@
 3. **완료**: 번호를 골라 `done`을 `True`로 바꾼다.
 4. **삭제**: 번호를 골라 목록에서 지운다.
 5. **종료**
+6. **검색**: 검색어를 입력받아 제목에 그 검색어가 들어간 할 일만 표로 보여 준다. 영어는 대소문자를 구분하지 않는다. 번호는 원래 목록 번호 그대로라서, 그 번호로 바로 완료·삭제할 수 있다. 빈 검색어는 검색하지 않는다.
 
 잘못된 입력(숫자가 아님, 없는 번호, 없는 메뉴)은 안내 문구만 보여 주고 계속 동작한다.
 
@@ -27,8 +28,9 @@ uv.lock          # 의존성 버전 고정
 `main.py`의 함수:
 - `load_todos()` / `save_todos(todos)`: `todos.json` 읽기/쓰기
 - `show_menu()`: 메뉴 출력
-- `show_todos(todos)`: 목록을 표로 출력
-- `add_todo` / `complete_todo` / `delete_todo`: 각 메뉴 동작
+- `print_table(rows, title)`: `(번호, 할 일)` 묶음들을 받아 표를 그린다. 목록 보기와 검색이 같이 쓴다.
+- `show_todos(todos)`: 목록 전체를 표로 출력
+- `add_todo` / `complete_todo` / `delete_todo` / `search_todos`: 각 메뉴 동작
 - `ask_number(todos)`: 표를 보여 주고 번호를 받아 리스트 인덱스(0부터)를 돌려준다. 잘못된 입력이면 `None`을 돌려준다. 완료와 삭제에서 같이 쓴다.
 - `main()`: 메뉴 반복
 
